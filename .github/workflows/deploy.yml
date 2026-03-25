@@ -16,9 +16,13 @@ jobs:
           docker build -t frontend ./frontend
           docker build -t backend ./backend
 
-      - name: SSH Deploy
-        run: |
-          ssh ubuntu@EC2_IP "
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/your-project-folder
             docker-compose down
             docker-compose up -d --build
-          "
