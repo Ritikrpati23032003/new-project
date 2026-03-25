@@ -1,28 +1,39 @@
-name: Deploy App
+name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Build images
+      # 🔐 Setup SSH
+      - name: Setup SSH
         run: |
-          docker build -t frontend ./frontend
-          docker build -t backend ./backend
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/your-project-folder
-            docker-compose down
-            docker-compose up -d --build
+      # 🚀 Deploy to EC2
+      - name: Deploy App
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /root/new-project/Dockerfile
+
+            echo "📥 Pulling latest code..."
+            git pull origin main
+
+            echo "🛑 Stopping old containers..."
+            docker compose down
+
+            echo "🔨 Rebuilding and starting..."
+            docker compose up -d --build
+
+            echo "✅ Deployment completed"
+          EOF
