@@ -12,7 +12,7 @@ app.use(express.json());
 
 /* ================= DB CONNECTION (POOL - FIXED) ================= */
 const db = mysql.createPool({
-  host: "database-1.cna0omeka1mf.us-east-1.rds.amazonaws.com",   // EC2 IP
+  host: "database-1.cna0omeka1mf.us-east-1.rds.amazonaws.com",   //  EC2 IP
   user: "admin",
   password: "rrpati23",
   database: "monitoring",
