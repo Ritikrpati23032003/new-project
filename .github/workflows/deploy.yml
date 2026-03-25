@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 📥 Checkout code
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 🔐 Setup SSH
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -22,40 +20,24 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      # 🚀 Deploy to EC2
       - name: Deploy Application
         run: |
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
 
-            echo "📂 Moving to home directory..."
             cd /home/${{ secrets.EC2_USER }}
 
-            echo "📥 Checking project..."
             if [ ! -d "new-project" ]; then
-              echo "Cloning repository..."
               git clone https://github.com/Ritikrpati23032003/new-project.git
             fi
 
             cd new-project
-
-            echo "📥 Pull latest code..."
             git pull origin main
 
-            echo "📂 Going to Docker folder..."
-            cd Dockerfile
+            cd Docker   # ✅ FIXED PATH
 
-            echo "🛑 Stopping old containers..."
             docker compose down
-
-            echo "🧹 Cleaning old images..."
-            docker system prune -a -f
-
-            echo "🔨 Building and starting containers..."
             docker compose up -d --build
 
-            echo "📊 Running containers:"
             docker ps
-
-            echo "✅ Deployment Successful!"
 
           EOF
