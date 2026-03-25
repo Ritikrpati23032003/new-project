@@ -2,14 +2,14 @@ services:
   frontend:
     build:
       context: ..
-      dockerfile: Dockerfile/Dockerfile.frontend
+      dockerfile: Docker/Dockerfile.frontend
     ports:
       - "80:80"
 
   backend:
     build:
       context: ..
-      dockerfile: Dockerfile/Dockerfile.backend
+      dockerfile: Docker/Dockerfile.backend
     ports:
       - "3000:3000"
 
