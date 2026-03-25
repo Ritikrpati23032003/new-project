@@ -6,7 +6,7 @@ const cron = require("node-cron");
 const nodemailer = require("nodemailer");
 const client = require("prom-client");
 
-const app = express();
+const app = express(); 
 app.use(cors());
 app.use(express.json());
 
